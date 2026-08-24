@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VigilPay System Architecture</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: auto;
+        }
+
+        .card {
+            background: white;
+            padding: 22px;
+            margin-bottom: 18px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .architecture {
+            text-align: center;
+        }
+
+        .box {
+            background: #eef4ff;
+            padding: 15px;
+            margin: 10px auto;
+            border-radius: 10px;
+            max-width: 600px;
+            font-weight: bold;
+        }
+
+        .arrow {
+            font-size: 25px;
+            margin: 5px;
+        }
+
+        .vigilpay {
+            background: #e8f5e9;
+            border: 2px solid #2e7d32;
+        }
+
+        .components {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(180px,1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .component {
+            background: white;
+            padding: 14px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            vertical-align: top;
+        }
+
+        th {
+            background: #f1f3f4;
+        }
+
+        .working {
+            color: #1b5e20;
+            font-weight: bold;
+        }
+
+        .mock {
+            color: #e65100;
+            font-weight: bold;
+        }
+
+        .principle {
+            background: #fff8e1;
+            padding: 16px;
+            border-radius: 10px;
+            margin-top: 12px;
+        }
+
+        .nav {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .nav a {
+            flex: 1;
+            text-align: center;
+            text-decoration: none;
+            padding: 13px;
+            border-radius: 8px;
+            background: #555;
+            color: white;
+            font-weight: bold;
+        }
+
+        .nav a.next {
+            background: #1a73e8;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <h1>VigilPay System Architecture</h1>
+
+        <div class="subtitle">
+            Prototype design and production migration path
+        </div>
+
+        <p>
+            VigilPay is designed as an intelligence layer
+            that sits on top of the bank's existing
+            transaction and fraud systems.
+        </p>
+
+    </div>
+
+
+    <div class="card architecture">
+
+        <h2>End-to-End Architecture</h2>
+
+        <div class="box">
+            Customer
+        </div>
+
+        <div class="arrow">↓</div>
+
+        <div class="box">
+            Bank Mobile / Internet Banking
+        </div>
+
+        <div class="arrow">↓</div>
+
+        <div class="box">
+            Existing Core Banking & Fraud Controls
+        </div>
+
+        <div class="arrow">↓</div>
+
+        <div class="box vigilpay">
+
+            VigilPay Intelligence Layer
+
+            <div class="components">
+
+                <div class="component">
+                    Risk Assessment
+                </div>
+
+                <div class="component">
+                    RAG Retrieval
+                </div>
+
+                <div class="component">
+                    AI Coaching
+                </div>
+
+                <div class="component">
+                    Policy & Escalation
+                </div>
+
+                <div class="component">
+                    Audit Trail
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="arrow">↓</div>
+
+        <div class="box">
+            Fraud Specialist / Human Decision
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <h2>What Is Actually Working?</h2>
+
+        <table>
+
+            <tr>
+                <th>Component</th>
+                <th>Prototype</th>
+                <th>Production Equivalent</th>
+            </tr>
+
+            <tr>
+                <td>Transaction data</td>
+
+                <td>
+                    <span class="working">
+                        Working
+                    </span>
+                    <br>
+                    SQLite synthetic bank transaction
+                </td>
+
+                <td>
+                    Secure bank transaction API
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>Risk assessment</td>
+
+                <td>
+                    <span class="working">
+                        Working
+                    </span>
+                    <br>
+                    Explainable weighted risk engine
+                </td>
+
+                <td>
+                    Existing bank fraud model,
+                    ML classifier or hybrid model
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>Scam intelligence</td>
+
+                <td>
+                    <span class="working">
+                        Working
+                    </span>
+                    <br>
+                    Local RAG retrieval from
+                    controlled scam files
+                </td>
+
+                <td>
+                    Enterprise knowledge store
+                    and vector retrieval service
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>Conversational AI</td>
+
+                <td>
+                    <span class="mock">
+                        Mocked
+                    </span>
+                    <br>
+                    Controlled three-turn
+                    coaching sequence
+                </td>
+
+                <td>
+                    Bank-approved enterprise LLM
+                    with constrained prompts
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>Customer interface</td>
+
+                <td>
+                    <span class="working">
+                        Working
+                    </span>
+                    <br>
+                    Browser-based interaction
+                </td>
+
+                <td>
+                    Embedded component in the
+                    bank mobile / internet app
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>Human review</td>
+
+                <td>
+                    <span class="working">
+                        Working
+                    </span>
+                    <br>
+                    Fraud Specialist Workbench
+                </td>
+
+                <td>
+                    Bank fraud operations
+                    case-management platform
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>Audit trail</td>
+
+                <td>
+                    <span class="working">
+                        Working
+                    </span>
+                    <br>
+                    SQLite decision logging
+                </td>
+
+                <td>
+                    Enterprise audit,
+                    case-management and SIEM systems
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>Validation results</td>
+
+                <td>
+                    <span class="mock">
+                        Synthetic
+                    </span>
+                    <br>
+                    Demonstration metrics
+                </td>
+
+                <td>
+                    Controlled pilot using
+                    labelled bank transaction data
+                </td>
+            </tr>
+
+        </table>
+
+    </div>
+
+
+    <div class="card">
+
+        <h2>Why Separate the Components?</h2>
+
+        <div class="principle">
+            <strong>Risk model:</strong>
+            How concerned should we be?
+        </div>
+
+        <div class="principle">
+            <strong>RAG:</strong>
+            What approved and current scam
+            information is relevant?
+        </div>
+
+        <div class="principle">
+            <strong>LLM:</strong>
+            What is the most useful neutral
+            question to ask the customer?
+        </div>
+
+        <div class="principle">
+            <strong>Human specialist:</strong>
+            What action should the bank take?
+        </div>
+
+        <div class="principle">
+            <strong>Audit layer:</strong>
+            Can we reconstruct why each
+            decision was made?
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <h2>Key Design Principle</h2>
+
+        <p>
+            VigilPay does not give the LLM direct authority
+            to approve or block a payment.
+        </p>
+
+        <p>
+            The AI supports detection, evidence retrieval
+            and customer coaching. Material payment
+            decisions remain subject to bank policy
+            and human oversight.
+        </p>
+
+    </div>
+
+
+    <div class="nav">
+
+        <a href="/demo">
+            Back to Demo
+        </a>
+
+        <a href="/customer"
+           class="next">
+            Start Customer Journey
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+</html>

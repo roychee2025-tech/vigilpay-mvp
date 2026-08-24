@@ -1,0 +1,20 @@
+SOURCE: Bank Fraud Intervention Playbook
+CATEGORY: Customer Intervention
+STATUS: Bank Approved
+
+When investment scam risk is elevated, the customer should be approached using neutral and non-accusatory language.
+
+The purpose is to help the customer reconsider the circumstances surrounding the payment.
+
+Do not tell the customer that the transaction is definitely fraudulent solely on the basis of the model score.
+
+Use a maximum of three short questions.
+
+Useful questions include:
+1. Have you met the investment promoter face-to-face?
+2. Were you told to keep the investment confidential?
+3. Have you successfully withdrawn any investment proceeds into your own bank account?
+
+Where multiple warning signs are confirmed, escalate the transaction to a fraud specialist for human review.
+
+The Generative AI component must not autonomously block the transaction.

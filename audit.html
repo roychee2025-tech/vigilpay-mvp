@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VigilPay Audit Trail</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 16px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .event {
+            border-left: 4px solid #1a73e8;
+            padding-left: 15px;
+            margin-bottom: 20px;
+        }
+
+        .event-name {
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .time {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .details {
+            margin-top: 8px;
+        }
+.nav {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.nav a {
+    flex: 1;
+    display: block;
+    padding: 12px;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 8px;
+    background: #555;
+    color: white;
+    font-weight: bold;
+}
+
+.nav a.next {
+    background: #1a73e8;
+}
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>VigilPay Audit Trail</h1>
+
+    <div class="card">
+        <h2>Transaction TX001</h2>
+
+        <p>
+            Complete decision history for the VigilPay case.
+        </p>
+    </div>
+
+    <div class="card">
+
+        <h2>Audit Timeline</h2>
+
+        <div id="auditEvents">
+            Loading audit trail...
+        </div>
+
+    </div>
+
+<div class="nav">
+    <a href="/demo">
+        Back to Demo
+    </a>
+
+    <a href="/specialist" class="next">
+        Next: Specialist Workbench
+    </a>
+</div>
+
+</div>
+
+
+<script>
+
+const transactionId = "TX001";
+
+
+async function loadAudit() {
+
+    const response =
+        await fetch(
+            "/vigilpay/audit/" +
+            transactionId
+        );
+
+    const data =
+        await response.json();
+
+    const container =
+        document.getElementById(
+            "auditEvents"
+        );
+
+    container.innerHTML = "";
+
+    if (
+        !data.audit_events ||
+        data.audit_events.length === 0
+    ) {
+
+        container.innerText =
+            "No audit events recorded.";
+
+        return;
+    }
+
+    data.audit_events.forEach(
+        function(item) {
+
+            const event =
+                document.createElement("div");
+
+            event.className =
+                "event";
+
+            const name =
+                document.createElement("div");
+
+            name.className =
+                "event-name";
+
+            name.innerText =
+                item.event;
+
+            const details =
+                document.createElement("div");
+
+            details.className =
+                "details";
+
+            details.innerText =
+                item.details;
+
+            const time =
+                document.createElement("div");
+
+            time.className =
+                "time";
+
+            time.innerText =
+                item.created_at;
+
+            event.appendChild(name);
+            event.appendChild(details);
+            event.appendChild(time);
+
+            container.appendChild(event);
+        }
+    );
+}
+
+
+loadAudit();
+
+</script>
+
+</body>
+</html>

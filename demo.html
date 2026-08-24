@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>VigilPay End-to-End Demo</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .hero {
+            background: white;
+            padding: 28px;
+            border-radius: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        .hero h1 {
+            margin-top: 0;
+            font-size: 36px;
+        }
+
+        .subtitle {
+            color: #555;
+            font-size: 19px;
+            margin-bottom: 18px;
+        }
+
+        .flow {
+            background: #eef4ff;
+            padding: 18px;
+            border-radius: 10px;
+            margin-top: 20px;
+            line-height: 1.8;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 16px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .step-number {
+            display: inline-block;
+            background: #1a73e8;
+            color: white;
+            width: 34px;
+            height: 34px;
+            line-height: 34px;
+            text-align: center;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .step-title {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .description {
+            margin-top: 12px;
+            color: #444;
+            line-height: 1.5;
+        }
+
+        a.button {
+            display: block;
+            margin-top: 16px;
+            padding: 14px;
+            background: #1a73e8;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 17px;
+            font-weight: bold;
+        }
+
+        .note {
+            background: #fff3e0;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            line-height: 1.5;
+        }
+
+        .reset-card {
+            background: #fff8e1;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 17px;
+            background: #555;
+            color: white;
+            font-weight: bold;
+        }
+
+        button:disabled {
+            background: #999;
+        }
+
+        #resetResult {
+            margin-top: 12px;
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: center;
+            color: #777;
+            font-size: 13px;
+            margin-top: 25px;
+            margin-bottom: 20px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+
+    <!-- ================================================= -->
+    <!-- HERO -->
+    <!-- ================================================= -->
+
+    <div class="hero">
+
+        <h1>VigilPay</h1>
+
+        <div class="subtitle">
+            GenAI-Powered Scam Prevention Intelligence Layer
+        </div>
+
+        <p>
+            VigilPay demonstrates how conversational AI can
+            complement a bank's existing fraud and payment
+            controls by detecting elevated scam risk,
+            retrieving approved scam intelligence,
+            coaching the customer and escalating higher-risk
+            cases to a human fraud specialist.
+        </p>
+
+
+        <div class="flow">
+
+            Bank Transaction
+            →
+            Risk Assessment
+            →
+            RAG Scam Intelligence
+            →
+            Customer Coaching
+            →
+            Human Specialist
+            →
+            Audit
+            →
+            Pilot Validation
+
+        </div>
+
+
+        <div class="note">
+
+            <strong>Prototype notice:</strong>
+
+            The transaction, customer, scam intelligence and
+            validation metrics used in this demonstration are
+            synthetic.
+
+            The prototype uses local RAG retrieval and a
+            mock LLM conversation to demonstrate the
+            end-to-end architecture and control flow.
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- RESET DEMO -->
+    <!-- ================================================= -->
+
+    <div class="card reset-card">
+
+        <h2>Prepare Demonstration</h2>
+
+        <p>
+            Clear previous customer responses and audit records
+            before beginning a new end-to-end VigilPay demo.
+        </p>
+
+        <button
+            id="resetButton"
+            onclick="resetDemo()">
+
+            Start New Demo
+
+        </button>
+
+        <div id="resetResult"></div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- STEP 0 -->
+    <!-- ================================================= -->
+
+    <div class="card">
+
+        <span class="step-number">
+            0
+        </span>
+
+        <span class="step-title">
+            System Architecture
+        </span>
+
+
+        <div class="description">
+
+            Understand where VigilPay sits within the banking
+            payment journey and how each prototype component
+            maps to a production implementation.
+
+            This page also clearly identifies which components
+            are working, mocked or synthetic.
+
+        </div>
+
+
+        <a class="button"
+           href="/architecture">
+
+            View System Architecture
+
+        </a>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- STEP 1 -->
+    <!-- ================================================= -->
+
+    <div class="card">
+
+        <span class="step-number">
+            1
+        </span>
+
+        <span class="step-title">
+            Customer Transfer & AI Coaching
+        </span>
+
+
+        <div class="description">
+
+            Start with a synthetic S$25,000 investment transfer.
+
+            VigilPay assesses the transaction risk, retrieves
+            relevant scam intelligence and conducts a short
+            multi-turn safety conversation with the customer.
+
+            The customer's responses determine whether the
+            transaction requires specialist review.
+
+        </div>
+
+
+        <a class="button"
+           href="/customer">
+
+            Start Customer Journey
+
+        </a>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- STEP 2 -->
+    <!-- ================================================= -->
+
+    <div class="card">
+
+        <span class="step-number">
+            2
+        </span>
+
+        <span class="step-title">
+            Fraud Specialist Workbench
+        </span>
+
+
+        <div class="description">
+
+            Review an escalated case using the original
+            transaction details, 92/100 risk assessment,
+            explainable risk indicators, RAG sources and
+            customer coaching responses.
+
+            The final payment-related decision remains with
+            the human fraud specialist.
+
+        </div>
+
+
+        <a class="button"
+           href="/specialist">
+
+            Open Specialist Workbench
+
+        </a>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- STEP 3 -->
+    <!-- ================================================= -->
+
+    <div class="card">
+
+        <span class="step-number">
+            3
+        </span>
+
+        <span class="step-title">
+            Audit Trail
+        </span>
+
+
+        <div class="description">
+
+            Review the reconstructable history of the case,
+            including the start of customer coaching,
+            completion of the safety assessment and the
+            specialist's human decision.
+
+        </div>
+
+
+        <a class="button"
+           href="/audit">
+
+            View Audit Trail
+
+        </a>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- STEP 4 -->
+    <!-- ================================================= -->
+
+    <div class="card">
+
+        <span class="step-number">
+            4
+        </span>
+
+        <span class="step-title">
+            Pilot Validation Dashboard
+        </span>
+
+
+        <div class="description">
+
+            Review synthetic pilot metrics against predefined
+            success and safety thresholds including scam
+            detection recall, false-positive rate, latency and
+            grounded-response performance.
+
+        </div>
+
+
+        <a class="button"
+           href="/dashboard">
+
+            Open Validation Dashboard
+
+        </a>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- DESIGN PRINCIPLES -->
+    <!-- ================================================= -->
+
+    <div class="card">
+
+        <h2>VigilPay Design Principles</h2>
+
+        <p>
+            <strong>Risk model:</strong>
+            determines how concerned the system should be.
+        </p>
+
+        <p>
+            <strong>RAG:</strong>
+            retrieves relevant approved scam intelligence.
+        </p>
+
+        <p>
+            <strong>Conversational AI:</strong>
+            asks neutral questions to uncover information
+            that may not be visible from the transaction alone.
+        </p>
+
+        <p>
+            <strong>Human specialist:</strong>
+            retains authority for material payment decisions.
+        </p>
+
+        <p>
+            <strong>Audit:</strong>
+            preserves the decision history for governance
+            and investigation.
+        </p>
+
+    </div>
+
+
+    <div class="footer">
+
+        VigilPay Prototype — Synthetic Demonstration Environment
+
+    </div>
+
+</div>
+
+
+<script>
+
+
+/* =====================================================
+   RESET DEMO
+   ===================================================== */
+
+async function resetDemo() {
+
+    const result =
+        document.getElementById(
+            "resetResult"
+        );
+
+
+    const button =
+        document.getElementById(
+            "resetButton"
+        );
+
+
+    result.innerText =
+        "Resetting TX001...";
+
+
+    button.disabled =
+        true;
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/vigilpay/reset/TX001",
+                {
+                    method: "POST"
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Reset request failed"
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            data.status ===
+            "RESET_COMPLETE"
+        ) {
+
+            result.innerText =
+                "Demo reset successfully. TX001 is ready.";
+
+        }
+
+        else {
+
+            result.innerText =
+                "Unable to reset demo.";
+
+        }
+
+    }
+
+
+    catch (error) {
+
+        result.innerText =
+            "Unable to reset demo.";
+
+        console.log(
+            error
+        );
+
+    }
+
+
+    button.disabled =
+        false;
+
+}
+
+
+</script>
+
+
+</body>
+</html>

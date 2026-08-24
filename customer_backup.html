@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VigilPay Customer Demo</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <style>
+    button:disabled {
+    background: #999;
+    cursor: not-allowed;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 16px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .amount {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .high {
+            color: #c62828;
+            font-weight: bold;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            background: #1a73e8;
+            color: white;
+        }
+
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px;
+            margin-top: 12px;
+            min-height: 80px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        #conversation {
+            display: none;
+        }
+
+        .ai {
+            background: #e8f0fe;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .customer {
+            background: #e8f5e9;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .escalate {
+            background: #fff3e0;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+.nav {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.nav a {
+    flex: 1;
+    display: block;
+    padding: 12px;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 8px;
+    background: #555;
+    color: white;
+    font-weight: bold;
+}
+
+.nav a.next {
+    background: #1a73e8;
+}
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+        <h2>Confirm Transfer</h2>
+
+        <p>You're sending</p>
+
+        <div class="amount">S$25,000</div>
+
+        <p>
+            To:<br>
+            <strong>Nexus Digital Assets Pte Ltd</strong>
+        </p>
+
+        <p>
+            Purpose:<br>
+            Investment
+        </p>
+
+        <button id="continueButton"
+                onclick="startVigilPay()">
+            Continue Transfer
+        </button>
+    </div>
+
+
+    <div id="conversation" class="card">
+
+        <h2>VigilPay Safety Check</h2>
+
+        <p class="high">
+            We noticed some characteristics that may require
+            an additional safety check.
+        </p>
+
+        <div id="messages"></div>
+
+        <textarea
+            id="answer"
+            placeholder="Type your answer here...">
+        </textarea>
+
+        <button id="submitAnswerButton"
+                onclick="sendAnswer()">
+            Submit Answer
+        </button>
+
+        <div id="escalate" class="escalate">
+            <strong>Additional review required</strong>
+
+            <p>
+                Your transfer has been referred to a fraud specialist
+                for a safety review.
+            </p>
+
+            <p>
+                A specialist will review the transaction and your
+                responses before the payment proceeds.
+            </p>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="nav">
+    <a href="/demo">
+        Back to Demo
+    </a>
+
+    <a href="/specialist"
+       class="next"
+       id="nextSpecialist"
+       style="display:none;">
+        Next: Specialist Workbench
+    </a>
+</div>
+
+<script>
+
+const transactionId = "TX001";
+
+let coachingStarted = false;
+
+function addMessage(text, type) {
+
+    const messages =
+        document.getElementById("messages");
+
+    const div =
+        document.createElement("div");
+
+    div.className = type;
+
+    if (type === "ai") {
+        div.innerHTML =
+            "<strong>VigilPay:</strong><br>" + text;
+    }
+    else {
+        div.innerHTML =
+            "<strong>You:</strong><br>" + text;
+    }
+
+    messages.appendChild(div);
+}
+
+
+async function startVigilPay() {
+
+    if (coachingStarted) {
+        return;
+    }
+
+    coachingStarted = true;
+
+    const continueButton =
+        document.getElementById("continueButton");
+
+    continueButton.disabled = true;
+    continueButton.innerText =
+        "Starting Safety Check...";
+
+    try {
+
+        // Reset any previous demo conversation
+        await fetch(
+            "/vigilpay/reset/" + transactionId,
+            {
+                method: "POST"
+            }
+        );
+
+        // Clear old messages from screen
+        document.getElementById(
+            "messages"
+        ).innerHTML = "";
+
+        // Hide previous escalation
+        document.getElementById(
+            "escalate"
+        ).style.display = "none";
+
+        // Hide Next Specialist button
+        const nextButton =
+            document.getElementById(
+                "nextSpecialist"
+            );
+
+        if (nextButton) {
+            nextButton.style.display =
+                "none";
+        }
+
+        // Show coaching section
+        document.getElementById(
+            "conversation"
+        ).style.display = "block";
+
+
+        // Start question 1
+        const response =
+            await fetch(
+                "/vigilpay/coach/" +
+                transactionId
+            );
+
+        const data =
+            await response.json();
+
+        addMessage(
+            data.coaching_question,
+            "ai"
+        );
+
+        continueButton.innerText =
+            "Safety Check Started";
+
+        document.getElementById(
+            "conversation"
+        ).scrollIntoView({
+            behavior: "smooth"
+        });
+
+    }
+
+    catch (error) {
+
+        coachingStarted = false;
+
+        continueButton.disabled =
+            false;
+
+        continueButton.innerText =
+            "Continue Transfer";
+
+        alert(
+            "Unable to start VigilPay safety check."
+        );
+
+        console.log(error);
+    }
+}
+
+async function sendAnswer() {
+
+    const answerBox =
+        document.getElementById("answer");
+
+    const answer =
+        answerBox.value.trim();
+
+    if (!answer) {
+        alert("Please enter an answer.");
+        return;
+    }
+
+    addMessage(
+        answer,
+        "customer"
+    );
+
+    answerBox.value = "";
+
+    const response =
+        await fetch(
+            "/vigilpay/respond/" + transactionId,
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body: JSON.stringify({
+                    answer: answer
+                })
+            }
+        );
+
+    const data =
+        await response.json();
+
+if (data.status === "ESCALATE") {
+
+    document.getElementById(
+        "escalate"
+    ).style.display = "block";
+
+    const nextButton =
+        document.getElementById(
+            "nextSpecialist"
+        );
+
+    if (nextButton) {
+        nextButton.style.display =
+            "block";
+    }
+
+    answerBox.style.display =
+        "none";
+
+    document.getElementById(
+        "submitAnswerButton"
+    ).style.display = "none";
+
+    return;
+}
+
+    if (data.next_question) {
+
+        addMessage(
+            data.next_question,
+            "ai"
+        );
+    }
+}
+
+</script>
+
+</body>
+</html>

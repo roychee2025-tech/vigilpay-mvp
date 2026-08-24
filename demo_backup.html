@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VigilPay End-to-End Demo</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .hero {
+            background: white;
+            padding: 28px;
+            border-radius: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        .hero h1 {
+            margin-top: 0;
+        }
+
+        .subtitle {
+            color: #555;
+            font-size: 18px;
+        }
+
+        .flow {
+            background: #eef4ff;
+            padding: 18px;
+            border-radius: 10px;
+            margin-top: 20px;
+            line-height: 1.8;
+            font-weight: bold;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 16px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .step-number {
+            display: inline-block;
+            background: #1a73e8;
+            color: white;
+            width: 34px;
+            height: 34px;
+            line-height: 34px;
+            text-align: center;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .step-title {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .description {
+            margin-top: 12px;
+            color: #444;
+            line-height: 1.5;
+        }
+
+        a.button {
+            display: block;
+            margin-top: 16px;
+            padding: 14px;
+            background: #1a73e8;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 17px;
+        }
+
+        .note {
+            background: #fff3e0;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 17px;
+            background: #555;
+            color: white;
+}
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="hero">
+
+        <h1>VigilPay</h1>
+
+        <div class="subtitle">
+            GenAI-powered scam prevention intelligence layer
+        </div>
+
+        <p>
+            This prototype demonstrates how VigilPay sits
+            on top of an existing banking payment journey
+            to detect scam risk, coach the customer,
+            escalate high-risk cases and maintain a
+            reconstructable audit trail.
+        </p>
+
+        <div class="flow">
+            Bank Transaction
+            →
+            Risk Assessment
+            →
+            RAG Scam Intelligence
+            →
+            Customer Coaching
+            →
+            Human Specialist
+            →
+            Audit
+            →
+            Pilot Validation
+        </div>
+
+        <div class="note">
+            <strong>Prototype notice:</strong>
+            The transaction, customer, scam intelligence
+            and validation metrics used in this demonstration
+            are synthetic. The mock LLM simulates the
+            conversational GenAI component.
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <span class="step-number">1</span>
+
+        <span class="step-title">
+            Customer Transfer & AI Coaching
+        </span>
+
+        <div class="description">
+            Start with a synthetic S$25,000 investment transfer.
+            VigilPay assesses the transaction, retrieves approved
+            scam intelligence and asks the customer a short
+            sequence of coaching questions.
+        </div>
+
+        <a class="button"
+           href="/customer">
+            Start Customer Journey
+        </a>
+
+    </div>
+
+
+    <div class="card">
+
+        <span class="step-number">2</span>
+
+        <span class="step-title">
+            Fraud Specialist Workbench
+        </span>
+
+        <div class="description">
+            Review the escalated transaction, 92/100 risk score,
+            risk indicators, RAG evidence and customer responses.
+            The fraud specialist makes the final human decision.
+        </div>
+
+        <a class="button"
+           href="/specialist">
+            Open Specialist Workbench
+        </a>
+
+    </div>
+
+
+    <div class="card">
+
+        <span class="step-number">3</span>
+
+        <span class="step-title">
+            Audit Trail
+        </span>
+
+        <div class="description">
+            View the recorded decision history, including
+            coaching initiation, escalation and the specialist's
+            human decision.
+        </div>
+
+        <a class="button"
+           href="/audit">
+            View Audit Trail
+        </a>
+
+    </div>
+
+
+    <div class="card">
+
+        <span class="step-number">4</span>
+
+        <span class="step-title">
+            Pilot Validation Dashboard
+        </span>
+
+        <div class="description">
+            Review synthetic pilot performance against
+            predefined success and governance thresholds
+            before progressing to a controlled pilot.
+        </div>
+
+        <a class="button"
+           href="/dashboard">
+            Open Validation Dashboard
+        </a>
+
+    </div>
+
+<div class="card">
+
+    <h2>Reset Demonstration</h2>
+
+    <p>
+        Clear previous customer responses and audit events
+        before starting a new VigilPay demonstration.
+    </p>
+
+    <button onclick="resetDemo()">
+        Start New Demo
+    </button>
+
+    <div id="resetResult"
+         style="margin-top:12px;font-weight:bold;">
+    </div>
+
+</div>
+
+</div>
+
+<script>
+
+async function resetDemo() {
+
+    const result =
+        document.getElementById(
+            "resetResult"
+        );
+
+    result.innerText =
+        "Resetting...";
+
+    const response =
+        await fetch(
+            "/vigilpay/reset/TX001",
+            {
+                method: "POST"
+            }
+        );
+
+    const data =
+        await response.json();
+
+    if (
+        data.status ===
+        "RESET_COMPLETE"
+    ) {
+
+        result.innerText =
+            "Demo reset successfully. TX001 is ready.";
+
+    } else {
+
+        result.innerText =
+            "Unable to reset demo.";
+    }
+}
+
+</script>
+
+</body>
+</html>

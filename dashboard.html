@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>VigilPay Pilot Validation Dashboard</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 16px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .banner {
+            background: #fff3e0;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .metric {
+            background: #f8f9fa;
+            padding: 18px;
+            border-radius: 10px;
+        }
+
+        .metric-name {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .metric-value {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .target {
+            color: #555;
+            margin-top: 7px;
+        }
+
+        .pass {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 5px 10px;
+            border-radius: 6px;
+            background: #e8f5e9;
+            color: #1b5e20;
+            font-weight: bold;
+        }
+
+        .go {
+            background: #e8f5e9;
+            padding: 18px;
+            border-radius: 10px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #1b5e20;
+        }
+
+        .control {
+            padding: 10px;
+            margin-top: 8px;
+            background: #f4f6f8;
+            border-radius: 8px;
+        }
+
+        h1 {
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #555;
+            margin-bottom: 20px;
+        }
+.nav {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.nav a {
+    flex: 1;
+    display: block;
+    padding: 12px;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 8px;
+    background: #555;
+    color: white;
+    font-weight: bold;
+}
+
+.nav a.next {
+    background: #1a73e8;
+}
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>VigilPay Pilot Validation Dashboard</h1>
+
+    <div class="subtitle">
+        Model performance, safety and pilot readiness
+    </div>
+
+    <div class="banner">
+        <strong>Prototype notice:</strong>
+        All results shown on this dashboard are synthetic
+        demonstration data and are not live bank results.
+    </div>
+
+
+    <div class="card">
+
+        <h2>Key Validation Metrics</h2>
+
+        <div
+            class="metric-grid"
+            id="metrics">
+
+            Loading...
+
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <h2>Safety Controls</h2>
+
+        <div class="control">
+            ✓ Human review enabled for escalated cases
+        </div>
+
+        <div class="control">
+            ✓ RAG responses grounded in approved sources
+        </div>
+
+        <div class="control">
+            ✓ Customer coaching limited to controlled interaction
+        </div>
+
+        <div class="control">
+            ✓ Full decision and specialist audit trail
+        </div>
+
+        <div class="control">
+            ✓ No autonomous payment blocking by the LLM
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <h2>Go / No-Go Assessment</h2>
+
+        <div id="goDecision">
+            Loading...
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <h2>Pilot Exit Criteria</h2>
+
+        <p>
+            Scam detection recall must be at least
+            <strong>90%</strong>.
+        </p>
+
+        <p>
+            False-positive rate must remain at or below
+            <strong>2%</strong>.
+        </p>
+
+        <p>
+            Generated coaching must remain grounded
+            in approved scam-intelligence sources.
+        </p>
+
+        <p>
+            Escalated cases must remain subject to
+            human specialist review.
+        </p>
+
+        <p>
+            Material safety or governance failures
+            trigger a pilot stop and review.
+        </p>
+
+    </div>
+
+<div class="nav">
+    <a href="/demo">
+        Back to Demo
+    </a>
+
+    <a href="/specialist" class="next">
+        Next: Specialist Workbench
+    </a>
+
+</div>
+
+</div>
+
+
+<script>
+
+async function loadDashboard() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/vigilpay/validation"
+            );
+
+        const data =
+            await response.json();
+
+
+        const metricContainer =
+            document.getElementById(
+                "metrics"
+            );
+
+        metricContainer.innerHTML = "";
+
+
+        data.metrics.forEach(
+            function(metric) {
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+                card.className =
+                    "metric";
+
+
+                let targetText = "";
+
+                if (
+                    metric.direction ===
+                    "minimum"
+                ) {
+
+                    targetText =
+                        "Target: ≥ " +
+                        metric.target +
+                        metric.unit;
+
+                }
+
+                else {
+
+                    targetText =
+                        "Target: ≤ " +
+                        metric.target +
+                        metric.unit;
+
+                }
+
+
+                card.innerHTML =
+                    "<div class='metric-name'>" +
+                    metric.name +
+                    "</div>" +
+
+                    "<div class='metric-value'>" +
+                    metric.actual +
+                    metric.unit +
+                    "</div>" +
+
+                    "<div class='target'>" +
+                    targetText +
+                    "</div>" +
+
+                    "<div class='pass'>" +
+                    metric.result +
+                    "</div>";
+
+
+                metricContainer.appendChild(
+                    card
+                );
+
+            }
+        );
+
+
+        const decision =
+            document.getElementById(
+                "goDecision"
+            );
+
+
+        decision.innerHTML =
+            "<div class='go'>" +
+            data.go_no_go.recommendation +
+            "</div>";
+
+    }
+
+    catch (error) {
+
+        document.getElementById(
+            "metrics"
+        ).innerText =
+            "Unable to load validation data.";
+
+        console.log(error);
+
+    }
+
+}
+
+
+loadDashboard();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VigilPay Customer Demo</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: auto;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 16px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        h1,
+        h2 {
+            margin-top: 0;
+        }
+
+        .amount {
+            font-size: 34px;
+            font-weight: bold;
+            margin: 10px 0 20px 0;
+        }
+
+        .label {
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .value {
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .warning-text {
+            color: #c62828;
+            font-weight: bold;
+            line-height: 1.4;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 17px;
+            background: #1a73e8;
+            color: white;
+        }
+
+        button:disabled {
+            background: #999;
+            cursor: not-allowed;
+        }
+
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px;
+            margin-top: 12px;
+            min-height: 90px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        #conversation {
+            display: none;
+        }
+
+        .ai {
+            background: #e8f0fe;
+            padding: 14px;
+            border-radius: 10px;
+            margin-top: 12px;
+            line-height: 1.4;
+        }
+
+        .customer {
+            background: #e8f5e9;
+            padding: 14px;
+            border-radius: 10px;
+            margin-top: 12px;
+            line-height: 1.4;
+        }
+
+        .escalate {
+            background: #fff3e0;
+            padding: 16px;
+            border-radius: 10px;
+            margin-top: 18px;
+            display: none;
+        }
+
+        .complete {
+            background: #e8f5e9;
+            padding: 16px;
+            border-radius: 10px;
+            margin-top: 18px;
+            display: none;
+        }
+
+        .voice-panel {
+            background: #eef4ff;
+            padding: 14px;
+            border-radius: 10px;
+            margin-top: 12px;
+        }
+
+        .voice-panel button {
+            background: #555;
+        }
+
+        .mic-button {
+            background: #6a1b9a;
+        }
+
+        .mic-button.listening {
+            background: #c62828;
+        }
+
+        .speech-status {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .nav {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .nav a {
+            flex: 1;
+            display: block;
+            padding: 12px;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 8px;
+            background: #555;
+            color: white;
+            font-weight: bold;
+        }
+
+        .nav a.next {
+            background: #1a73e8;
+        }
+
+        .prototype-note {
+            background: #fff8e1;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            color: #555;
+            font-size: 14px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="prototype-note">
+        <strong>Prototype:</strong>
+        Synthetic transaction, local RAG retrieval and mock LLM coaching.
+        Voice output uses browser text-to-speech and voice input uses browser speech recognition.
+    </div>
+
+
+    <div class="card">
+
+        <h2>Confirm Transfer</h2>
+
+        <div class="label">
+            You're sending
+        </div>
+
+        <div class="amount">
+            S$25,000
+        </div>
+
+        <div class="label">
+            To
+        </div>
+
+        <div class="value">
+            Nexus Digital Assets Pte Ltd
+        </div>
+
+        <br>
+
+        <div class="label">
+            Purpose
+        </div>
+
+        <div class="value">
+            Investment
+        </div>
+
+        <button
+            id="continueButton"
+            onclick="startVigilPay()">
+            Continue Transfer
+        </button>
+
+    </div>
+
+
+    <div
+        id="conversation"
+        class="card">
+
+        <h2>
+            VigilPay Safety Check
+        </h2>
+
+        <p class="warning-text">
+            We noticed some characteristics that may require
+            an additional safety check.
+        </p>
+
+
+        <div class="voice-panel">
+
+            <strong>
+                Voice Interaction
+            </strong>
+
+            <p>
+                VigilPay can read each question aloud.
+                You may answer by typing or by speaking.
+            </p>
+
+            <button
+                id="voiceToggleButton"
+                onclick="toggleVoice()">
+                Voice Prompt: ON
+            </button>
+
+            <button
+                onclick="repeatLastQuestion()">
+                Repeat Last Question
+            </button>
+
+        </div>
+
+
+        <div id="messages"></div>
+
+
+        <textarea
+            id="answer"
+            placeholder="Type your answer here or use the microphone...">
+        </textarea>
+
+
+        <button
+            id="micButton"
+            class="mic-button"
+            onclick="startListening()">
+            🎤 Speak Answer
+        </button>
+
+
+        <div
+            id="speechStatus"
+            class="speech-status">
+        </div>
+
+
+        <button
+            id="submitAnswerButton"
+            onclick="sendAnswer()">
+            Submit Answer
+        </button>
+
+
+        <div
+            id="escalate"
+            class="escalate">
+
+            <strong>
+                Additional review required
+            </strong>
+
+            <p>
+                Your transfer has been referred to
+                a fraud specialist for a safety review.
+            </p>
+
+            <p>
+                A specialist will review the transaction,
+                risk indicators and your responses before
+                the payment proceeds.
+            </p>
+
+        </div>
+
+
+        <div
+            id="complete"
+            class="complete">
+
+            <strong>
+                Safety check completed
+            </strong>
+
+            <p>
+                No immediate specialist review is required
+                based on your responses.
+            </p>
+
+            <p>
+                You may continue with the normal banking
+                payment process.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="nav">
+
+        <a href="/demo">
+            Back to Demo
+        </a>
+
+        <a
+            href="/specialist"
+            class="next"
+            id="nextSpecialist"
+            style="display:none;">
+            Next: Specialist Workbench
+        </a>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const transactionId = "TX001";
+
+let coachingStarted = false;
+let voiceEnabled = true;
+let lastSpokenQuestion = "";
+
+let recognition = null;
+let isListening = false;
+
+
+/* ====================================================
+   TEXT TO SPEECH
+   ==================================================== */
+
+function speakText(text) {
+
+    if (!voiceEnabled) {
+        return;
+    }
+
+    if (!("speechSynthesis" in window)) {
+
+        console.log(
+            "Speech synthesis not supported."
+        );
+
+        return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    const speech =
+        new SpeechSynthesisUtterance(
+            text
+        );
+
+    speech.lang = "en-SG";
+    speech.rate = 0.92;
+    speech.pitch = 1.0;
+    speech.volume = 1.0;
+
+    window.speechSynthesis.speak(
+        speech
+    );
+}
+
+
+/* ====================================================
+   VOICE TOGGLE
+   ==================================================== */
+
+function toggleVoice() {
+
+    voiceEnabled =
+        !voiceEnabled;
+
+    const button =
+        document.getElementById(
+            "voiceToggleButton"
+        );
+
+    if (voiceEnabled) {
+
+        button.innerText =
+            "Voice Prompt: ON";
+
+        if (lastSpokenQuestion) {
+
+            speakText(
+                lastSpokenQuestion
+            );
+        }
+
+    } else {
+
+        button.innerText =
+            "Voice Prompt: OFF";
+
+        window.speechSynthesis.cancel();
+    }
+}
+
+
+/* ====================================================
+   REPEAT QUESTION
+   ==================================================== */
+
+function repeatLastQuestion() {
+
+    if (!lastSpokenQuestion) {
+
+        alert(
+            "No VigilPay question has been asked yet."
+        );
+
+        return;
+    }
+
+    speakText(
+        lastSpokenQuestion
+    );
+}
+
+
+/* ====================================================
+   SET UP SPEECH RECOGNITION
+   ==================================================== */
+
+function setupSpeechRecognition() {
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+
+        document.getElementById(
+            "micButton"
+        ).disabled = true;
+
+        document.getElementById(
+            "speechStatus"
+        ).innerText =
+            "Voice input is not supported by this browser. You can still type your answer.";
+
+        return;
+    }
+
+    recognition =
+        new SpeechRecognition();
+
+    recognition.lang =
+        "en-SG";
+
+    recognition.continuous =
+        false;
+
+    recognition.interimResults =
+        false;
+
+
+    recognition.onstart =
+        function() {
+
+            isListening = true;
+
+            const micButton =
+                document.getElementById(
+                    "micButton"
+                );
+
+            micButton.classList.add(
+                "listening"
+            );
+
+            micButton.innerText =
+                "Listening...";
+
+            document.getElementById(
+                "speechStatus"
+            ).innerText =
+                "Speak now...";
+        };
+
+
+    recognition.onresult =
+        function(event) {
+
+            const transcript =
+                event.results[0][0]
+                    .transcript;
+
+            document.getElementById(
+                "answer"
+            ).value =
+                transcript;
+
+            document.getElementById(
+                "speechStatus"
+            ).innerText =
+                "Recognised: " +
+                transcript;
+        };
+
+
+    recognition.onerror =
+        function(event) {
+
+            document.getElementById(
+                "speechStatus"
+            ).innerText =
+                "Voice input error: " +
+                event.error;
+        };
+
+
+    recognition.onend =
+        function() {
+
+            isListening =
+                false;
+
+            const micButton =
+                document.getElementById(
+                    "micButton"
+                );
+
+            micButton.classList.remove(
+                "listening"
+            );
+
+            micButton.innerText =
+                "🎤 Speak Answer";
+        };
+}
+
+
+/* ====================================================
+   START LISTENING
+   ==================================================== */
+
+function startListening() {
+
+    if (!recognition) {
+
+        setupSpeechRecognition();
+    }
+
+    if (!recognition) {
+        return;
+    }
+
+    if (isListening) {
+
+        recognition.stop();
+        return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    document.getElementById(
+        "speechStatus"
+    ).innerText =
+        "Starting microphone...";
+
+    try {
+
+        recognition.start();
+
+    } catch (error) {
+
+        console.log(
+            error
+        );
+    }
+}
+
+
+/* ====================================================
+   ADD MESSAGE
+   ==================================================== */
+
+function addMessage(text, type) {
+
+    const messages =
+        document.getElementById(
+            "messages"
+        );
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+    div.className =
+        type;
+
+    if (type === "ai") {
+
+        div.innerHTML =
+            "<strong>VigilPay:</strong><br>" +
+            text;
+
+        lastSpokenQuestion =
+            text;
+
+        speakText(
+            text
+        );
+
+    } else {
+
+        div.innerHTML =
+            "<strong>You:</strong><br>" +
+            text;
+    }
+
+    messages.appendChild(
+        div
+    );
+}
+
+
+/* ====================================================
+   START VIGILPAY
+   ==================================================== */
+
+async function startVigilPay() {
+
+    if (coachingStarted) {
+        return;
+    }
+
+    coachingStarted =
+        true;
+
+    const continueButton =
+        document.getElementById(
+            "continueButton"
+        );
+
+    const answerBox =
+        document.getElementById(
+            "answer"
+        );
+
+    const submitButton =
+        document.getElementById(
+            "submitAnswerButton"
+        );
+
+    const micButton =
+        document.getElementById(
+            "micButton"
+        );
+
+
+    continueButton.disabled =
+        true;
+
+    continueButton.innerText =
+        "Starting Safety Check...";
+
+
+    try {
+
+        const resetResponse =
+            await fetch(
+                "/vigilpay/reset/" +
+                transactionId,
+                {
+                    method: "POST"
+                }
+            );
+
+        if (!resetResponse.ok) {
+
+            throw new Error(
+                "Unable to reset demo case"
+            );
+        }
+
+
+        document.getElementById(
+            "messages"
+        ).innerHTML =
+            "";
+
+        document.getElementById(
+            "escalate"
+        ).style.display =
+            "none";
+
+        document.getElementById(
+            "complete"
+        ).style.display =
+            "none";
+
+        document.getElementById(
+            "nextSpecialist"
+        ).style.display =
+            "none";
+
+        document.getElementById(
+            "speechStatus"
+        ).innerText =
+            "";
+
+        answerBox.style.display =
+            "block";
+
+        answerBox.value =
+            "";
+
+        submitButton.style.display =
+            "block";
+
+        submitButton.disabled =
+            false;
+
+        submitButton.innerText =
+            "Submit Answer";
+
+        micButton.style.display =
+            "block";
+
+        document.getElementById(
+            "conversation"
+        ).style.display =
+            "block";
+
+
+        const response =
+            await fetch(
+                "/vigilpay/coach/" +
+                transactionId
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Unable to start coaching"
+            );
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (!data.coaching_question) {
+
+            throw new Error(
+                "No coaching question returned"
+            );
+        }
+
+
+        addMessage(
+            data.coaching_question,
+            "ai"
+        );
+
+
+        continueButton.innerText =
+            "Safety Check Started";
+
+
+        document.getElementById(
+            "conversation"
+        ).scrollIntoView({
+            behavior: "smooth"
+        });
+
+    }
+
+
+    catch (error) {
+
+        coachingStarted =
+            false;
+
+        continueButton.disabled =
+            false;
+
+        continueButton.innerText =
+            "Continue Transfer";
+
+        alert(
+            "Unable to start VigilPay safety check."
+        );
+
+        console.log(
+            error
+        );
+    }
+}
+
+
+/* ====================================================
+   SUBMIT ANSWER
+   ==================================================== */
+
+async function sendAnswer() {
+
+    const answerBox =
+        document.getElementById(
+            "answer"
+        );
+
+    const submitButton =
+        document.getElementById(
+            "submitAnswerButton"
+        );
+
+    const micButton =
+        document.getElementById(
+            "micButton"
+        );
+
+    const answer =
+        answerBox.value.trim();
+
+
+    if (!answer) {
+
+        alert(
+            "Please enter or speak an answer."
+        );
+
+        return;
+    }
+
+
+    addMessage(
+        answer,
+        "customer"
+    );
+
+
+    answerBox.value =
+        "";
+
+
+    document.getElementById(
+        "speechStatus"
+    ).innerText =
+        "";
+
+
+    submitButton.disabled =
+        true;
+
+    micButton.disabled =
+        true;
+
+    submitButton.innerText =
+        "Processing...";
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/vigilpay/respond/" +
+                transactionId,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            answer: answer
+                        })
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Backend response error"
+            );
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            data.status ===
+            "CONTINUE_COACHING"
+        ) {
+
+            addMessage(
+                data.next_question,
+                "ai"
+            );
+
+            submitButton.disabled =
+                false;
+
+            micButton.disabled =
+                false;
+
+            submitButton.innerText =
+                "Submit Answer";
+
+            return;
+        }
+
+
+        if (
+            data.status ===
+            "ESCALATE"
+        ) {
+
+            addMessage(
+                data.message,
+                "ai"
+            );
+
+
+            document.getElementById(
+                "escalate"
+            ).style.display =
+                "block";
+
+
+            document.getElementById(
+                "nextSpecialist"
+            ).style.display =
+                "block";
+
+
+            answerBox.style.display =
+                "none";
+
+            submitButton.style.display =
+                "none";
+
+            micButton.style.display =
+                "none";
+
+
+            document.getElementById(
+                "speechStatus"
+            ).style.display =
+                "none";
+
+
+            document.getElementById(
+                "escalate"
+            ).scrollIntoView({
+                behavior: "smooth"
+            });
+
+
+            return;
+        }
+
+
+        if (
+            data.status ===
+            "COMPLETE"
+        ) {
+
+            addMessage(
+                data.message,
+                "ai"
+            );
+
+
+            document.getElementById(
+                "complete"
+            ).style.display =
+                "block";
+
+
+            answerBox.style.display =
+                "none";
+
+            submitButton.style.display =
+                "none";
+
+            micButton.style.display =
+                "none";
+
+
+            document.getElementById(
+                "speechStatus"
+            ).style.display =
+                "none";
+
+
+            document.getElementById(
+                "complete"
+            ).scrollIntoView({
+                behavior: "smooth"
+            });
+
+
+            return;
+        }
+
+
+        submitButton.disabled =
+            false;
+
+        micButton.disabled =
+            false;
+
+        submitButton.innerText =
+            "Submit Answer";
+
+
+        alert(
+            "Unexpected response from VigilPay."
+        );
+
+    }
+
+
+    catch (error) {
+
+        submitButton.disabled =
+            false;
+
+        micButton.disabled =
+            false;
+
+        submitButton.innerText =
+            "Submit Answer";
+
+
+        alert(
+            "Unable to process your answer."
+        );
+
+
+        console.log(
+            error
+        );
+    }
+}
+
+
+/* ====================================================
+   INITIALISE
+   ==================================================== */
+
+setupSpeechRecognition();
+
+</script>
+
+</body>
+</html>

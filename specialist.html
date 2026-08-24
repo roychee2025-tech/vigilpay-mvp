@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VigilPay Fraud Specialist Workbench</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 16px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .risk {
+            font-size: 28px;
+            font-weight: bold;
+            color: #c62828;
+        }
+
+        .label {
+            font-weight: bold;
+        }
+
+        .warning {
+            background: #fff3e0;
+            padding: 14px;
+            border-radius: 8px;
+        }
+
+        .answer {
+            background: #f1f8e9;
+            padding: 10px;
+            margin-top: 8px;
+            border-radius: 8px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            background: #777;
+            color: white;
+        }
+
+        button.selected {
+            background: #1a73e8;
+            font-weight: bold;
+        }
+
+        #decisionResult {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        .nav {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }  
+
+        .nav a {
+            flex: 1;
+            display: block;
+            padding: 12px;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 8px;
+            background: #555;
+            color: white;
+            font-weight: bold;
+         }
+
+         .nav a.next {
+            background: #1a73e8;
+         } 
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>VigilPay Fraud Specialist Workbench</h1>
+
+    <div class="card">
+        <h2>Case Summary</h2>
+
+        <div class="risk" id="riskScore">
+            Loading...
+        </div>
+
+        <p>
+            <span class="label">Transaction:</span>
+            <span id="transactionId"></span>
+        </p>
+
+        <p>
+            <span class="label">Amount:</span>
+            <span id="amount"></span>
+        </p>
+
+        <p>
+            <span class="label">Payee:</span>
+            <span id="payee"></span>
+        </p>
+
+        <p>
+            <span class="label">Purpose:</span>
+            <span id="purpose"></span>
+        </p>
+    </div>
+
+
+    <div class="card">
+        <h2>Risk Indicators</h2>
+
+        <div id="riskReasons"></div>
+    </div>
+
+
+    <div class="card">
+        <h2>RAG Evidence</h2>
+
+        <div id="ragSources"></div>
+    </div>
+
+
+    <div class="card">
+        <h2>Customer Coaching Responses</h2>
+
+        <div id="customerAnswers"></div>
+    </div>
+
+
+    <div class="card warning">
+
+        <h2>Escalation</h2>
+
+        <p id="escalationReason"></p>
+
+        <p>
+            <strong>Human review required</strong>
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <h2>Specialist Decision</h2>
+
+        <button onclick="makeDecision('ALLOW', this)">
+            Allow Transfer
+        </button>
+
+        <button onclick="makeDecision('HOLD', this)">
+            Hold for Further Review
+        </button>
+
+        <button onclick="makeDecision('CONTACT_CUSTOMER', this)">
+            Contact Customer
+        </button>
+
+        <button onclick="makeDecision('ESCALATE_INVESTIGATION', this)">
+            Escalate Investigation
+        </button>
+
+        <div id="decisionResult"></div>
+
+    </div>
+
+<div class="nav">
+    <a href="/demo">
+        Back to Demo
+    </a>
+
+    <a href="/specialist" class="next">
+        Next: Specialist Workbench
+    </a>
+
+</div>
+
+</div>
+
+
+<script>
+
+const transactionId = "TX001";
+
+
+async function loadCase() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/vigilpay/case/" + transactionId
+            );
+
+        const data =
+            await response.json();
+
+        document.getElementById(
+            "transactionId"
+        ).innerText =
+            data.transaction.transaction_id;
+
+        document.getElementById(
+            "amount"
+        ).innerText =
+            "S$" +
+            Number(
+                data.transaction.amount
+            ).toLocaleString();
+
+        document.getElementById(
+            "payee"
+        ).innerText =
+            data.transaction.payee;
+
+        document.getElementById(
+            "purpose"
+        ).innerText =
+            data.transaction.purpose;
+
+        document.getElementById(
+            "riskScore"
+        ).innerText =
+            data.assessment.risk_score +
+            "/100 " +
+            data.assessment.risk_level +
+            " RISK";
+
+
+        const reasons =
+            document.getElementById(
+                "riskReasons"
+            );
+
+        reasons.innerHTML = "";
+
+        data.assessment.reasons.forEach(
+            function(reason) {
+
+                const p =
+                    document.createElement("p");
+
+                p.innerText =
+                    "• " + reason;
+
+                reasons.appendChild(p);
+            }
+        );
+
+
+        const sources =
+            document.getElementById(
+                "ragSources"
+            );
+
+        sources.innerHTML = "";
+
+        data.rag_sources.forEach(
+            function(source) {
+
+                const p =
+                    document.createElement("p");
+
+                p.innerText =
+                    "• " + source;
+
+                sources.appendChild(p);
+            }
+        );
+
+
+        const answers =
+            document.getElementById(
+                "customerAnswers"
+            );
+
+        answers.innerHTML = "";
+
+        data.customer_answers.forEach(
+            function(answer, index) {
+
+                const div =
+                    document.createElement("div");
+
+                div.className =
+                    "answer";
+
+                div.innerText =
+                    "Response " +
+                    (index + 1) +
+                    ": " +
+                    answer;
+
+                answers.appendChild(div);
+            }
+        );
+
+
+        document.getElementById(
+            "escalationReason"
+        ).innerText =
+            data.escalation_reason;
+
+    }
+
+    catch (error) {
+
+        document.getElementById(
+            "riskScore"
+        ).innerText =
+            "Unable to load case";
+
+        console.log(error);
+    }
+}
+
+
+async function makeDecision(
+    decision,
+    selectedButton
+) {
+
+    const result =
+        document.getElementById(
+            "decisionResult"
+        );
+
+    const buttons =
+        document.querySelectorAll(
+            "button"
+        );
+
+    buttons.forEach(
+        function(button) {
+
+            button.classList.remove(
+                "selected"
+            );
+        }
+    );
+
+    selectedButton.classList.add(
+        "selected"
+    );
+
+    result.innerText =
+        "Recording decision...";
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/vigilpay/decision/" +
+                transactionId,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        decision: decision,
+                        officer:
+                            "Fraud Specialist",
+                        comments:
+                            "Decision recorded through VigilPay workbench"
+                    })
+                }
+            );
+
+        const data =
+            await response.json();
+
+
+        if (
+            data.status ===
+            "DECISION_RECORDED"
+        ) {
+
+            result.innerText =
+                "Decision recorded successfully: " +
+                data.decision;
+
+        }
+
+        else {
+
+            selectedButton.classList.remove(
+                "selected"
+            );
+
+            result.innerText =
+                "Unable to record decision.";
+        }
+
+    }
+
+    catch (error) {
+
+        selectedButton.classList.remove(
+            "selected"
+        );
+
+        result.innerText =
+            "Unable to record decision.";
+
+        console.log(error);
+    }
+}
+
+
+loadCase();
+
+</script>
+
+</body>
+</html>
