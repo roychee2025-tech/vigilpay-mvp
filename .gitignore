@@ -2,3 +2,8 @@
 __pycache__/
 *.pyc
 .env
+app_backup.py
+customer_backup.html
+customer_voice_backup.html
+demo_backup.html
+vigilpay.db
