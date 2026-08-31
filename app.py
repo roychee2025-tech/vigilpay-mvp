@@ -13,6 +13,39 @@ from database import (
     reset_case
 )
 
+def seed_demo_transaction():
+    from database import get_connection
+
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+    INSERT OR IGNORE INTO transactions (
+        transaction_id,
+        customer_id,
+        amount,
+        payee,
+        new_payee,
+        destination_type,
+        recent_transfers,
+        purpose
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        "TX001",
+        "CUST001",
+        25000,
+        "NEXUS DIGITAL ASSETS PTE LTD",
+        1,
+        "Digital asset / crypto",
+        3,
+        "Investment opportunity introduced by an online friend. "
+        "Returns are guaranteed and payment must be made today."
+    ))
+
+    conn.commit()
+    conn.close()
+
 from risk_engine import assess_transaction
 from rag import retrieve
 from llm import generate_coaching_question
@@ -25,7 +58,7 @@ app = FastAPI(
 )
 
 init_db()
-
+seed_demo_transaction()
 
 # ---------------------------------------------------------
 # REQUEST MODELS
